@@ -17,7 +17,7 @@ root.render(
         <App />
       </BrowserRouter>
       <footer>
-        <p>&copy; 2025 Your Project Name</p>
+        <p>&copy; 2025 Tic-Tac-Toe</p>
       </footer>
     </div>
 

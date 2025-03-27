@@ -1,5 +1,5 @@
 import sequelize from '../config/database.js';
-import User from './user.js';
+import Player from './player.js';
 
 const syncModels = async () => {
     try {
@@ -8,28 +8,27 @@ const syncModels = async () => {
     } catch (error) {
       console.error('Error synchronizing models:', error);
     }
-    // Generate 10 users
-    const users = [];
+    // Generate 10 players
+    const players = [];
     for (let i = 1; i <= 10; i++) {
-        users.push({
-            username: `User ${i}`,
-            email: `user${i}@example.com`,
+        players.push({
+            player_id: `player ${i}`,
             // Add other properties as needed
         });
     }
 
-    // Insert users into the table
-    User.bulkCreate(users)
+    // Insert players into the table
+    Player.bulkCreate(players)
         .then(() => {
-            console.log('Users inserted successfully.');
+            console.log('Players inserted successfully.');
         })
         .catch((error) => {
-            console.error('Error inserting users:', error);
+            console.error('Error inserting players:', error);
         });
 
   };
   
  export {
-    sequelize, User, syncModels
+    sequelize, Player, syncModels
   };
   
