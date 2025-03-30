@@ -6,6 +6,7 @@ import Home from "./Home";
 import Companies from "./Companies";
 import Users from "./Users";
 import Players from "./Players";
+import Int from "./Int";
 const Navbar = () => {
     return (
         <>
@@ -16,6 +17,7 @@ const Navbar = () => {
                         <li><Link to="/Companies">Companies</Link></li>
                         <li><Link to="/Users">Users</Link></li>
                         <li><Link to="/Players">Players</Link></li>
+                        <li><Link to="/Int">Int Data</Link></li>
                     </ul>
                 </nav>
                 <Routes>
@@ -23,7 +25,7 @@ const Navbar = () => {
                     <Route path="/Companies" element={<Companies />} />
                     <Route path="/Users" element={<Users />} /> 
                     <Route path="/Players" element={<Players />} /> 
-
+                    <Route path="/Int" element={<Int />} /> 
                 </Routes>
             </div>
 
