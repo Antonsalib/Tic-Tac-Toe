@@ -42,14 +42,20 @@ const Players = () => {
             <h1>Players</h1>
         </div>
         <div>
-          {Array.isArray(player) && player.length > 0 ? (
-            player.map((data) => (
-                <p key={data.id}>{data.player_id}</p>
-            ))
-          ) : (
-            <p>No players found or data is not in expected format.</p>
-          )}
-        </div>
+  {Array.isArray(player) && player.length > 0 ? (
+    player.map((data) => (
+      <div key={data.player_id} style={{ marginBottom: "10px" }}>
+        <p><strong>ID:</strong> {data.player_id}</p>
+        <p><strong>Wins:</strong> {data.total_wins}</p>
+        <p><strong>Losses:</strong> {data.total_losses}</p>
+        <p><strong>Ties:</strong> {data.total_ties}</p>
+        <p><strong>Total Games:</strong> {data.total_games}</p>
+      </div>
+    ))
+  ) : (
+    <p>No players found or data is not in the expected format.</p>
+  )}
+</div>
     </>
   );
 }

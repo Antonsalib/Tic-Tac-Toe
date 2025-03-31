@@ -38,7 +38,7 @@ const IntData = () => {
     <div className="int-data-container">
       <h2>Player moves</h2>
       {intData.length === 0 ? (
-        <p>No moves made :( </p>
+        <p>No moves made : </p>
       ) : (
         <table className="data-table">
           <thead>

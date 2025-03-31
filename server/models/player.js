@@ -6,7 +6,7 @@ const Player = sequelize.define('player', {
   player_id: DataTypes.INTEGER,
   total_losses: DataTypes.INTEGER,
   total_wins: DataTypes.INTEGER,
-  total_tiles: DataTypes.INTEGER,
+  total_ties: DataTypes.INTEGER,
   total_games: DataTypes.INTEGER,
 });
 

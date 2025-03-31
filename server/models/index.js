@@ -13,6 +13,11 @@ const syncModels = async () => {
     for (let i = 1; i <= 10; i++) {
         players.push({
             player_id: `player ${i}`,
+            total_losses: `losses ${Math.floor(Math.random() * 12) + 1}`,
+            total_wins: `wins ${Math.floor(Math.random() * 12) + 1}`,
+            total_ties: `ties ${Math.floor(Math.random() * 12) + 1}`,
+            total_games: `games ${Math.floor(Math.random() * 12) + 1}`,
+
             // Add other properties as needed
         });
     }
