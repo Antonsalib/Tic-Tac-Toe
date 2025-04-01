@@ -23,7 +23,7 @@ const Navbar = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/Companies">Companies</Link></li>
             <li><Link to="/Users">Users</Link></li>
-            <li><Link to="/Players">Players</Link></li>
+            <li><Link to="/Players">Leaderboard</Link></li>
             <li><Link to="/Int">Int Data</Link></li>
             <li>
               <button onClick={() => setDarkMode(!darkMode)} className="theme-toggle">
