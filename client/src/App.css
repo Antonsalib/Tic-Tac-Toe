@@ -1,5 +1,18 @@
+import './App.css';
+
 .App {
   text-align: center;
+}
+/* Light Mode */
+body.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
 }
 
 .App-logo {
