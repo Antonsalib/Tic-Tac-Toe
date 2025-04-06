@@ -16,7 +16,7 @@ syncModels();
 
 app.get("/api/game", async (req, res) => {
   // insert openai key here
-  const OPENAI_API_KEY="";
+  const OPENAI_API_KEY="insert openai key here";
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
   const aiModel = "gpt-4-turbo-preview";
   const boardJson = req.query.board;
