@@ -5,6 +5,8 @@ const app = express();
 import cors from "cors"; // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
 const CORS = cors();
 import OpenAI from "openai";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const PORT = 3001;
 app.use(CORS);
@@ -16,8 +18,7 @@ import { syncModels } from "./models/index.js";
 syncModels();
 
 app.get("/api/game", async (req, res) => {
-  const OPENAI_API_KEY = "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";
-  const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const aiModel = "gpt-3.5-turbo";
   const boardJson = req.query.board;
 
