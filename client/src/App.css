@@ -1,7 +1,7 @@
-
 .App {
   text-align: center;
 }
+
 /* Light Mode */
 body.light-mode {
   background-color: #ffffff;
@@ -14,32 +14,50 @@ body.dark-mode {
   color: #ffffff;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Center the game board */
+.board-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  min-height: 100vh; /* Ensures the board is centered on the screen */
 }
 
-.App-link {
-  color: #61dafb;
+/* Styling for the Tic-Tac-Toe buttons (cells) */
+.board-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem; /* Space between each cell */
 }
 
+/* Style the individual cells (buttons) */
+.cell-button {
+  width: 80px; /* Adjust the width */
+  height: 80px; /* Adjust the height */
+  background-color: white;
+  border: 4px solid #ccc;
+  font-size: 32px; /* Make the X/O text bigger */
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cell-button:hover {
+  background-color: #f0f0f0;
+}
+
+.cell-button:disabled {
+  cursor: not-allowed;
+  background-color: #e0e0e0;
+}
+
+/* Status and other text styling */
+.status-text {
+  font-size: 1.5rem;
+  margin-top: 20px;
+}
+
+/* Add a transition effect */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
