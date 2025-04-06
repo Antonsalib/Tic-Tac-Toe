@@ -2,26 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
-import App from './App';
+import Navbar from './Navbar';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <div>
-      <header>
-        <h1>React App</h1>
-        <div></div>
-      </header>
       <BrowserRouter>
-        <App />
+        <Navbar />
+        <main>
+        </main>
       </BrowserRouter>
       <footer>
         <p>&copy; 2025 Tic-Tac-Toe</p>
       </footer>
     </div>
-
-
   </React.StrictMode>
 );
 

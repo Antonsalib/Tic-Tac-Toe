@@ -1,6 +1,5 @@
 // server/index.js
 import express from "express";
-import company from "./api/json/company.json" with {type: "json"}; // Importing JSON data from a file
 const app = express();
 import cors from "cors"; // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
 const CORS = cors();
@@ -9,7 +8,6 @@ import OpenAI from "openai";
 
 const PORT = 3001;
 app.use(CORS);
-import User from './models/user.js';
 import Player from './models/player.js';
 import { syncModels } from "./models/index.js";
 
@@ -18,7 +16,7 @@ syncModels();
 
 app.get("/api/game", async (req, res) => {
   // insert openai key here
-  const OPENAI_API_KEY="insert open ai key here";
+  const OPENAI_API_KEY="";
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
   const aiModel = "gpt-4-turbo-preview";
   const boardJson = req.query.board;
@@ -53,15 +51,6 @@ app.get("/api/game", async (req, res) => {
   }
 });
 
-  app.get("/api/company", (req, res) => {
-  return res.json(company);
-});
-
-app.get("/api/user", async (req, res) => {
-  // Find all users
-    const users = await User.findAll();
-  return res.json(users);
-});
 
 app.get("/api/player", async (req, res) => {
   // Find all players

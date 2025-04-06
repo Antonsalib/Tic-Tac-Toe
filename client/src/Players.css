@@ -1,35 +1,53 @@
-/* Players.css */
+/* Base styles (light mode by default) */
 .table-container {
-    width: 80%;
-    margin: 20px auto;
-    overflow-x: auto;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  th, td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #000000;
-    color: white;
-  }
-  
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  td {
-    color: #333;
-  }
-  
+  width: 80%;
+  margin: 20px auto;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #000;
+  color: white;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+td {
+  color: #333;
+}
+
+/* Dark mode overrides */
+body.dark-mode table {
+  background: #1e1e1e;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode th {
+  background-color: #333;
+  color: #f0a500;
+}
+
+body.dark-mode td {
+  color: #eee;
+}
+
+body.dark-mode tr:hover {
+  background-color: #2a2a2a;
+}
