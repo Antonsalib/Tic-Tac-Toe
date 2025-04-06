@@ -68,6 +68,11 @@ function App() {
       setStatus(`${board[1][1]} wins`);
       return;
     }
+
+    // If the board is full and no one has won, it's a tie
+    if (!board.some(row => row.includes(""))) {
+      setStatus("It's a tie");
+    }
   };
 
   const handleCellClick = (row, col) => {
@@ -92,6 +97,16 @@ function App() {
     );
   };
 
+  const resetGame = () => {
+    setBoard([
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""]
+    ]);
+    setCurrentPlayer("X");
+    setStatus("ongoing");
+  };
+
   return (
     <div className="board-container">
       <h1 className="text-4xl font-bold mb-8">Tic Tac Toe</h1>
@@ -104,7 +119,16 @@ function App() {
           </div>
         ))}
       </div>
-      <div className="status-text">Status: {status}</div>
+      <div className="status-text">{status}!</div>
+      {/* Show replay button if game is over */}
+      {status !== "ongoing" && (
+        <button
+          className="replay-button"
+          onClick={resetGame}
+        >
+          Replay
+        </button>
+      )}
     </div>
   );
 }

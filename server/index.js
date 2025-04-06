@@ -27,7 +27,7 @@ app.get("/api/game", async (req, res) => {
     const prompt = [];
     prompt.push('You are an expert tic tac toe player.')
     prompt.push('You play as O. focus on winning, play extremely well. If you see an oppertunity to win, take it. Play aggressively.')
-    prompt.push('for the json content I provide as input, please give me json output in this same format, indicating your next move.')
+    prompt.push('Please respond with a JSON object indicating only your next move, without adding any extra moves or suggestions.');
     prompt.push('{board:[[],[],[]]}')
 
     const messages = [

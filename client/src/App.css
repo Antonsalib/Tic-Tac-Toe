@@ -66,3 +66,23 @@ body.dark-mode {
     transform: rotate(360deg);
   }
 }
+
+/* Styling for the Replay button */
+.replay-button {
+  padding: 10px 20px;
+  font-size: 1.25rem;
+  background-color: #4CAF50; /* Green background */
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.replay-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.replay-button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
