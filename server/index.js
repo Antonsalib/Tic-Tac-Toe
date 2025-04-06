@@ -5,8 +5,7 @@ const app = express();
 import cors from "cors"; // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
 const CORS = cors();
 import OpenAI from "openai";
-import dotenv from 'dotenv';
-dotenv.config();
+
 
 const PORT = 3001;
 app.use(CORS);
@@ -18,16 +17,18 @@ import { syncModels } from "./models/index.js";
 syncModels();
 
 app.get("/api/game", async (req, res) => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const aiModel = "gpt-3.5-turbo";
+  // insert openai key here
+  const OPENAI_API_KEY="insert open ai key here";
+  const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+  const aiModel = "gpt-4-turbo-preview";
   const boardJson = req.query.board;
 
   if (boardJson && boardJson.length) {
 
     const prompt = [];
-    prompt.push('You are an expert tic tac toe player.')
-    prompt.push('You play as O. focus on winning, play extremely well. If you see an oppertunity to win, take it. Play aggressively.')
-    prompt.push('Please respond with a JSON object indicating only your next move, without adding any extra moves or suggestions.');
+    prompt.push('You are an expert tic tac toe player that only moves when its your turn, making only one move at a time.')
+    prompt.push('You play as O. focus on winning, play extremely well.')
+    prompt.push('For the json content I provide as input, please give me json output in the same format.');
     prompt.push('{board:[[],[],[]]}')
 
     const messages = [
