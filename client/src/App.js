@@ -126,6 +126,7 @@ function App() {
           className="replay-button"
           onClick={resetGame}
         >
+          
           Replay
         </button>
       )}
