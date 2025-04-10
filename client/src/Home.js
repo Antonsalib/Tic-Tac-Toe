@@ -1,23 +1,12 @@
-// Home.jsx
-
 import React from "react";
+import TicTacToe from "./TicTacToe";
 
 const Home = () => {
-    return (
-        <>
-            <div style={{
-                display: "flex",
-                justifyContent: "center"
-            }}>
-                This is 
-                <span style={{ color: "green" }}>
-                    My application 
-                </span>
-                Home
-                Page
-            </div>
-        </>
-    );
+  return (
+    <>
+      <TicTacToe />
+    </>
+  );
 };
 
 export default Home;
