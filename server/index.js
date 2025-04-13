@@ -1,39 +1,33 @@
 import express from "express";
 const app = express();
-import cors from "cors"; // CORS is a node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
-import Player from './models/player.js';
+import cors from "cors";
+import OpenAI from "openai";
+import Player from "./models/player.js";
 import Move from './models/int.js';
 import { syncModels } from "./models/index.js";
-import OpenAI from "openai";
+
 
 const PORT = 3001;
 
-// CORS and JSON middleware
 app.use(cors());
 app.use(express.json());
 
-// Initialize models
 syncModels();
 
-// OpenAI setup
+
 const OPENAI_API_KEY = "key here";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const aiModel = "gpt-4-turbo-preview";
 
-// Game API endpoint
 app.get("/api/game", async (req, res) => {
-  // insert openai key here
-  const OPENAI_API_KEY="insert openai key here";
-  const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-  const aiModel = "gpt-4-turbo-preview";
   const boardJson = req.query.board;
 
   if (boardJson && boardJson.length) {
     const prompt = [];
-    prompt.push('You are an expert tic tac toe player that only moves when its your turn, making only one move at a time.')
-    prompt.push('You play as O. focus on winning, play extremely well.')
-    prompt.push('For the json content I provide as input, please give me json output in the same format.');
-    prompt.push('{board:[[],[],[]]}')
+    prompt.push("You are an expert tic tac toe player that only moves when it's your turn, making only one move at a time.");
+    prompt.push("You play as O. Focus on winning, play extremely well.");
+    prompt.push("For the JSON content I provide as input, please give me JSON output in the same format.");
+    prompt.push("{board:[[],[],[]]}");
 
     const messages = [
       {
@@ -64,11 +58,35 @@ app.get("/api/game", async (req, res) => {
   }
 });
 
-// PLAYER API ENDPOINTS
-// GET endpoint to fetch all players for leaderboard
 app.get("/api/player", async (req, res) => {
   try {
-    // Find all players and sort by win percentage (desc)
+    const players = await Player.findAll();
+    return res.json(players);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Failed to fetch players." });
+  }
+});
+
+app.get("/api/player/:name", async (req, res) => {
+  try {
+    const playerName = req.params.name;
+    const player = await Player.findOne({
+      where: { player_id: playerName }
+    });
+
+    if (!player) {
+      return res.status(404).json({ error: "Player not found" });
+    }
+
+    return res.json(player);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Failed to fetch player." });
+  }
+});
+app.post("/api/player/update", async (req, res) => {
+  try {
     const players = await Player.findAll({
       order: [
         ['total_wins', 'DESC'],
