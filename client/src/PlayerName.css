@@ -1,0 +1,129 @@
+/* PlayerNameModal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  .modal-content p {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  .form-group input.error {
+    border-color: #d32f2f;
+  }
+  
+  .error-message {
+    color: #d32f2f;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .cancel-button, 
+  .save-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+  }
+  
+  .cancel-button {
+    background-color: #f1f1f1;
+    color: #333;
+  }
+  
+  .save-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .cancel-button:hover {
+    background-color: #e1e1e1;
+  }
+  
+  .save-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Dark mode styles */
+  body.dark-mode .modal-content {
+    background-color: #333;
+    color: #f0f0f0;
+  }
+  
+  body.dark-mode .modal-content h2 {
+    color: #f0f0f0;
+  }
+  
+  body.dark-mode .modal-content p {
+    color: #ccc;
+  }
+  
+  body.dark-mode .form-group input {
+    background-color: #444;
+    border-color: #555;
+    color: #f0f0f0;
+  }
+  
+  body.dark-mode .form-group input:focus {
+    border-color: #f0a500;
+    box-shadow: 0 0 0 2px rgba(240, 165, 0, 0.2);
+  }
+  
+  body.dark-mode .cancel-button {
+    background-color: #555;
+    color: #f0f0f0;
+  }
+  
+  body.dark-mode .cancel-button:hover {
+    background-color: #666;
+  }

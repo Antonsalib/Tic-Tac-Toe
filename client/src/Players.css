@@ -1,53 +1,155 @@
-/* Base styles (light mode by default) */
-.table-container {
-  width: 80%;
-  margin: 20px auto;
-  overflow-x: auto;
+/* Enhanced Players.css */
+.leaderboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
-table {
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.leaderboard-header h1 {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.refresh-button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.refresh-button:hover {
+  background-color: #45a049;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
 }
 
-th, td {
-  padding: 12px;
+.leaderboard-table th, 
+.leaderboard-table td {
+  padding: 15px;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
 
-th {
+.leaderboard-table th {
   background-color: #000;
   color: white;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
 }
 
-tr:hover {
-  background-color: #f1f1f1;
+.leaderboard-table th:hover {
+  background-color: #333;
 }
 
-td {
-  color: #333;
+.leaderboard-table tbody tr {
+  transition: background-color 0.2s;
 }
 
-/* Dark mode overrides */
-body.dark-mode table {
-  background: #1e1e1e;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+.leaderboard-table tbody tr:hover {
+  background-color: #f9f9f9;
 }
 
-body.dark-mode th {
+/* Top player highlighting */
+.top-player {
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.top-player:first-child {
+  background-color: rgba(255, 215, 0, 0.25);
+}
+
+.loading-indicator,
+.error-message,
+.no-data {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  color: #d32f2f;
+}
+
+.no-data {
+  color: #666;
+  font-style: italic;
+}
+
+/* Dark mode styles */
+body.dark-mode .leaderboard-header h1 {
+  color: #f0f0f0;
+}
+
+body.dark-mode .table-container {
+  background: #222;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .leaderboard-table th {
   background-color: #333;
   color: #f0a500;
 }
 
-body.dark-mode td {
-  color: #eee;
+body.dark-mode .leaderboard-table th:hover {
+  background-color: #444;
 }
 
-body.dark-mode tr:hover {
+body.dark-mode .leaderboard-table td {
+  color: #eee;
+  border-bottom: 1px solid #444;
+}
+
+body.dark-mode .leaderboard-table tbody tr:hover {
   background-color: #2a2a2a;
+}
+
+body.dark-mode .top-player {
+  background-color: rgba(240, 165, 0, 0.1);
+}
+
+body.dark-mode .top-player:first-child {
+  background-color: rgba(240, 165, 0, 0.2);
+}
+
+body.dark-mode .no-data {
+  color: #aaa;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .leaderboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .leaderboard-table th, 
+  .leaderboard-table td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
 }

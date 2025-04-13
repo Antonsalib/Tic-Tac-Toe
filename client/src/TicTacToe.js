@@ -1,8 +1,9 @@
 import "./App.css";
-import IntData from "./Int";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
+import PlayerName from "./PlayerName";
 
 function TicTacToe() {
+  // Local game scores
   const [scores, setScores] = useState(() => {
     const savedScores = localStorage.getItem('ticTacToeScores');
     return savedScores 
@@ -10,6 +11,7 @@ function TicTacToe() {
       : { X: 0, O: 0, Ties: 0 };
   });
 
+  // Game state
   const [board, setBoard] = useState([
     ["", "", ""],
     ["", "", ""],
@@ -18,19 +20,14 @@ function TicTacToe() {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [status, setStatus] = useState("ongoing");
   const [loading, setLoading] = useState(false);
-  const [moveLoading, setMoveLoading] = useState(false);
+  
+  // Player name handling
+  const [playerName, setPlayerName] = useState(() => {
+    return localStorage.getItem('ticTacToePlayerName') || '';
+  });
+  const [isNameOpen, setIsNameOpen] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem('ticTacToeScores', JSON.stringify(scores));
-  }, [scores]);
-
-  useEffect(() => {
-    if (currentPlayer === "O" && status === 'ongoing') {
-      makeAIMove();
-    }
-  }, [currentPlayer, status]);
-
-  const checkGameStatus = () => {
+  const checkGameStatus = useCallback(() => {
     // Rows
     for (let i = 0; i < 3; i++) {
       if (
@@ -76,33 +73,69 @@ function TicTacToe() {
     }
 
     return null;
+  }, [board]);
+
+  // Update leaderboard with game result
+  const updateLeaderboard = useCallback((result) => {
+    // Skip if no player name
+    if (!playerName) return;
+    
+    const dbPlayerName = playerName.trim() || 'Guest Player';
+
+    // Update human player stats
+    fetch('http://localhost:3001/api/player/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playerName: dbPlayerName,
+        result: result
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to update stats');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Player stats updated:', data);
+    })
+    .catch(error => {
+      console.error('Error updating player stats:', error);
+    });
+    
+    // Update AI player stats
+    let aiResult = 'tie';
+    if (result === 'win') aiResult = 'loss';
+    if (result === 'loss') aiResult = 'win';
+    
+    fetch('http://localhost:3001/api/player/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playerName: 'AI Player',
+        result: aiResult
+      })
+    })
+    .then(response => response.json())
+    .catch(error => {
+      console.error('Error updating AI stats:', error);
+    });
+  }, [playerName]);
+
+  const handleSavePlayerName = (name) => {
+    // Ensure we have a valid name
+    const validName = name.trim() ? name : 'Guest Player';
+    setPlayerName(validName);
+    localStorage.setItem('ticTacToePlayerName', validName);
   };
 
-  useEffect(() => {
-    const result = checkGameStatus();
-
-    if (result && status === "ongoing") {
-      let newScores = { ...scores };
-      let newStatus = "";
-
-      if (result === 'X') {
-        newStatus = 'X wins';
-        newScores.X += 1;
-      } else if (result === 'O') {
-        newStatus = 'O wins';
-        newScores.O += 1;
-      } else if (result === 'Tie') {
-        newStatus = "It's a tie";
-        newScores.Ties += 1;
-      }
-
-      setScores(newScores);
-      setStatus(newStatus);
-    }
-  }, [board, status]);
-
-  const logMove = (player, row, col, gameResult = null) => {
-    setMoveLoading(true);
+  const logMove = useCallback((player, row, col, gameResult = null) => {
+    
     fetch('http://localhost:3001/api/int', {
       method: 'POST',
       headers: {
@@ -124,13 +157,11 @@ function TicTacToe() {
     })
     .catch(error => {
       console.error('Error logging move:', error);
-    })
-    .finally(() => {
-      setMoveLoading(false);
     });
-  };
+    
+  }, [status]);
 
-  const makeAIMove = () => {
+  const makeAIMove = useCallback(() => {
     setLoading(true);
     fetch(`http://localhost:3001/api/game?board=${encodeURIComponent(
       JSON.stringify(board)
@@ -154,9 +185,66 @@ function TicTacToe() {
         console.error("Error fetching AI move:", error);
         setLoading(false);
       });
-  };
+  }, [board, logMove]);
+
+  useEffect(() => {
+    localStorage.setItem('ticTacToeScores', JSON.stringify(scores));
+  }, [scores]);
+
+  useEffect(() => {
+    localStorage.setItem('ticTacToePlayerName', playerName);
+  }, [playerName]);
+
+  // Check if player name exists, otherwise prompt
+  useEffect(() => {
+    if (!playerName) {
+      setIsNameOpen(true);
+    }
+  }, [playerName]);
+
+  useEffect(() => {
+    if (currentPlayer === "O" && status === 'ongoing') {
+      makeAIMove();
+    }
+  }, [currentPlayer, status, makeAIMove]);
+
+  useEffect(() => {
+    const result = checkGameStatus();
+
+    if (result && status === "ongoing") {
+      let newScores = { ...scores };
+      let newStatus = "";
+
+      if (result === 'X') {
+        newStatus = 'X wins';
+        newScores.X += 1;
+        // Update leaderboard - human won
+        updateLeaderboard('win');
+      } else if (result === 'O') {
+        newStatus = 'O wins';
+        newScores.O += 1;
+        // Update leaderboard - human lost
+        updateLeaderboard('loss');
+      } else if (result === 'Tie') {
+        newStatus = "It's a tie";
+        newScores.Ties += 1;
+        // Update leaderboard - tie
+        updateLeaderboard('tie');
+      }
+
+      setScores(newScores);
+      setStatus(newStatus);
+    }
+  }, [board, status, scores, checkGameStatus, updateLeaderboard]);
+
 
   const handleCellClick = (row, col) => {
+    // Prompt for name if not set
+    if (!playerName) {
+      setIsNameOpen(true);
+      return;
+    }
+    
     if (board[row][col] === "" &&
       currentPlayer === "X" &&
       status === "ongoing"
@@ -197,11 +285,24 @@ function TicTacToe() {
     localStorage.removeItem('ticTacToeScores');
   };
 
+  const changePlayerName = () => {
+    setIsNameOpen(true);
+  };
+
   return (
     <div className="board-container">
+      <div className="player-info">
+        <div className="player-name-display">
+          <span>Player: {playerName || 'Guest'}</span>
+          <button className="change-name-button" onClick={changePlayerName}>
+            Change Name
+          </button>
+        </div>
+      </div>
+
       <div className="scoreboard">
         <div className="score-item">
-          <span className="player-label">Player (X)</span>
+          <span className="player-label">{playerName || 'Player'} (X)</span>
           <span className="score">{scores.X}</span>
         </div>
         <div className="score-item">
@@ -220,8 +321,8 @@ function TicTacToe() {
         </button>
       </div>
 
-      <h1 className="text-4xl font-bold mb-8">Tic Tac Toe</h1>
-      <div className="flex flex-col gap-1">
+      <h1>Tic Tac Toe</h1>
+      <div className="board">
         {board.map((row, i) => (
           <div className="board-row" key={i}>
             {row.map((_, j) => (
@@ -237,14 +338,16 @@ function TicTacToe() {
           className="replay-button"
           onClick={resetGame}
         >
-          Replay
+          Play Again
         </button>
       )}
 
-      <IntData 
-        board={board} 
-        status={status} 
-        scores={scores} 
+      {/* Player Name Modal */}
+      <PlayerName
+        isOpen={isNameOpen}
+        onClose={() => setIsNameOpen(false)}
+        onSave={handleSavePlayerName}
+        savedName={playerName}
       />
     </div>
   );
