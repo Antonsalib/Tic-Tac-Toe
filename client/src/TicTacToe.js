@@ -176,27 +176,65 @@ function TicTacToe() {
 
   const makeAIMove = useCallback(() => {
     setLoading(true);
-    fetch(`http://localhost:3001/api/game?board=${encodeURIComponent(
-      JSON.stringify(board)
-    )}`).then((res) => res.json())
+    
+    // Create a JSON string of the current board state
+    const boardJson = JSON.stringify({ board });
+    
+    console.log("Sending board to AI:", boardJson);
+    
+    fetch(`http://localhost:3001/api/game?board=${encodeURIComponent(boardJson)}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        const aiBoard = JSON.parse(data.aiResponse).board;
-
+        console.log("AI response received:", data);
+        
+        if (!data.aiResponse) {
+          throw new Error("No AI response received");
+        }
+        
+        // Parse the AI response
+        const aiResponseObj = JSON.parse(data.aiResponse);
+        
+        if (!aiResponseObj.board || !Array.isArray(aiResponseObj.board)) {
+          throw new Error("Invalid AI response format");
+        }
+        
+        const aiBoard = aiResponseObj.board;
+        
+        // Find which cell the AI played in
+        let moveRow = -1;
+        let moveCol = -1;
+        
         outer: for (let i = 0; i < 3; i++) {
           for (let j = 0; j < 3; j++) {
             if (aiBoard[i][j] !== board[i][j]) {
-              logMove('O', i, j);
+              moveRow = i;
+              moveCol = j;
               break outer;
             }
           }
         }
-
+        
+        if (moveRow !== -1 && moveCol !== -1) {
+          logMove('O', moveRow, moveCol);
+        } else {
+          console.warn("Could not detect AI move in response");
+        }
+        
+        // Update the board with AI's move
         setBoard(aiBoard);
         setCurrentPlayer("X");
         setLoading(false);
-      }).catch((error) => {
-        console.error("Error fetching AI move:", error);
+      })
+      .catch((error) => {
+        console.error("Error with AI move:", error);
         setLoading(false);
+        // Maybe show an error to the user
+        alert("There was an error with the AI's move. Please try again.");
       });
   }, [board, logMove]);
 

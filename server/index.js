@@ -15,84 +15,77 @@ app.use(express.json());
 syncModels();
 
 
-const OPENAI_API_KEY = "key here";
+const OPENAI_API_KEY = "KEY HERE";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const aiModel = "gpt-4-turbo-preview";
 
 app.get("/api/game", async (req, res) => {
   const boardJson = req.query.board;
 
-  if (boardJson && boardJson.length) {
-    const prompt = [];
-    prompt.push("You are an expert tic tac toe player that only moves when it's your turn, making only one move at a time.");
-    prompt.push("You play as O. Focus on winning, play extremely well.");
-    prompt.push("For the JSON content I provide as input, please give me JSON output in the same format.");
-    prompt.push("{board:[[],[],[]]}");
+  // Debug: Log the received board
+  console.log("Received board from client:", boardJson);
 
-    const messages = [
-      {
-        role: "system",
-        content: prompt.join(" "),
-      },
-      {
-        role: "user",
-        content: boardJson,
-      },
-    ];
-
-    try {
-      const completion = await openai.chat.completions.create({
-        model: aiModel,
-        messages,
-        response_format: { type: "json_object" },
-      });
-
-      const aiResponse = completion.choices[0].message.content;
-      res.json({ aiResponse });
-    } catch (error) {
-      console.error("OpenAI API error:", error);
-      res.status(500).json({ error: "Failed to generate AI move." });
-    }
-  } else {
-    res.status(400).json({ error: "Missing or invalid board input." });
+  if (!boardJson || !boardJson.length) {
+    return res.status(400).json({ error: "Missing or invalid board input." });
   }
-});
 
-app.get("/api/player", async (req, res) => {
   try {
-    const players = await Player.findAll();
-    return res.json(players);
+    // Parse the board data for validation
+    JSON.parse(boardJson);
   } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Failed to fetch players." });
+    console.error("Error parsing board JSON:", error);
+    return res.status(400).json({ error: "Invalid board JSON format" });
   }
-});
 
-app.get("/api/player/:name", async (req, res) => {
+  const prompt = [];
+  prompt.push("You are an expert tic tac toe player that only moves when it's your turn, making only one move at a time.");
+  prompt.push("You play as O. Focus on winning, play extremely well.");
+  prompt.push("For the JSON content I provide as input, please give me JSON output in the same format.");
+  prompt.push("{board:[[],[],[]]}");
+
+  const messages = [
+    {
+      role: "system",
+      content: prompt.join(" "),
+    },
+    {
+      role: "user",
+      content: boardJson,
+    },
+  ];
+
   try {
-    const playerName = req.params.name;
-    const player = await Player.findOne({
-      where: { player_id: playerName }
+    console.log("Sending request to OpenAI with board:", boardJson);
+    
+    const completion = await openai.chat.completions.create({
+      model: aiModel,
+      messages,
+      response_format: { type: "json_object" },
     });
 
-    if (!player) {
-      return res.status(404).json({ error: "Player not found" });
-    }
-
-    return res.json(player);
+    const aiResponse = completion.choices[0].message.content;
+    console.log("Received AI response:", aiResponse);
+    
+    res.json({ aiResponse });
   } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Failed to fetch player." });
+    console.error("OpenAI API error:", error);
+    res.status(500).json({ error: "Failed to generate AI move." });
   }
 });
-app.post("/api/player/update", async (req, res) => {
+
+// PLAYER API ENDPOINTS
+// GET endpoint to fetch all players for leaderboard
+app.get("/api/player", async (req, res) => {
   try {
+    // Find all players and sort by win percentage (desc)
     const players = await Player.findAll({
       order: [
         ['total_wins', 'DESC'],
         ['total_games', 'DESC']
       ]
     });
+    
+    console.log(`Returning ${players.length} players for leaderboard`);
     return res.json(players);
   } catch (error) {
     console.error("Database error:", error);
@@ -104,14 +97,18 @@ app.post("/api/player/update", async (req, res) => {
 app.get("/api/player/:name", async (req, res) => {
   try {
     const playerName = req.params.name;
+    console.log(`Looking up player: ${playerName}`);
+    
     const player = await Player.findOne({
       where: { player_id: playerName }
     });
     
     if (!player) {
+      console.log(`Player "${playerName}" not found`);
       return res.status(404).json({ error: "Player not found" });
     }
     
+    console.log(`Found player: ${player.player_id}`);
     return res.json(player);
   } catch (error) {
     console.error("Database error:", error);
@@ -119,14 +116,17 @@ app.get("/api/player/:name", async (req, res) => {
   }
 });
 
-// POST endpoint to create or update player statistics
-app.post("/api/player/update", async (req, res) => {
+// POST endpoint to create a new player
+app.post("/api/player/create", async (req, res) => {
   try {
-    const { playerName, result } = req.body;
+    const { playerName } = req.body;
     
-    if (!playerName || !result) {
-      return res.status(400).json({ error: "Player name and result are required" });
+    if (!playerName) {
+      console.error("Missing playerName in request body");
+      return res.status(400).json({ error: "Player name is required" });
     }
+    
+    console.log(`Creating/finding player: "${playerName}"`);
     
     // Find or create the player
     const [player, created] = await Player.findOrCreate({
@@ -139,6 +139,42 @@ app.post("/api/player/update", async (req, res) => {
       }
     });
     
+    console.log(`Player "${playerName}" ${created ? 'created' : 'already exists'}`);
+    
+    return res.json(player);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Failed to create player." });
+  }
+});
+
+// POST endpoint to update player statistics
+app.post("/api/player/update", async (req, res) => {
+  try {
+    const { playerName, result } = req.body;
+    
+    if (!playerName || !result) {
+      console.error("Missing playerName or result in request body");
+      return res.status(400).json({ error: "Player name and result are required" });
+    }
+    
+    console.log(`Updating player "${playerName}" with result: ${result}`);
+    
+    // Find or create the player
+    const [player, created] = await Player.findOrCreate({
+      where: { player_id: playerName },
+      defaults: {
+        total_wins: 0,
+        total_losses: 0,
+        total_ties: 0,
+        total_games: 0
+      }
+    });
+    
+    if (created) {
+      console.log(`Created new player "${playerName}" during update`);
+    }
+    
     // Update the player's statistics based on the game result
     let updateValues = { total_games: player.total_games + 1 };
     
@@ -149,11 +185,13 @@ app.post("/api/player/update", async (req, res) => {
     } else if (result === 'tie') {
       updateValues.total_ties = player.total_ties + 1;
     } else {
+      console.error(`Invalid result "${result}" for player "${playerName}"`);
       return res.status(400).json({ error: "Invalid result. Must be 'win', 'loss', or 'tie'" });
     }
     
     // Update the player record
     await player.update(updateValues);
+    console.log(`Updated player "${playerName}" stats:`, updateValues);
     
     return res.json(player);
   } catch (error) {
@@ -214,4 +252,8 @@ app.post("/api/int", async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
+  console.log(`Server endpoints:`);
+  console.log(`- API: http://localhost:${PORT}/api/game`);
+  console.log(`- Players: http://localhost:${PORT}/api/player`);
+  console.log(`- Create Player: http://localhost:${PORT}/api/player/create [POST]`);
 });

@@ -8,6 +8,11 @@ const Players = () => {
   const [sortField, setSortField] = useState('win_percentage');
   const [sortDirection, setSortDirection] = useState('desc');
   const [refreshInterval, setRefreshInterval] = useState(null);
+  const [debugMessage, setDebugMessage] = useState("");
+  const [createPlayerLoading, setCreatePlayerLoading] = useState(false);
+
+  // Get current player name from localStorage
+  const currentPlayerName = localStorage.getItem('ticTacToePlayerName');
 
   useEffect(() => {
     // Initial fetch
@@ -29,36 +34,97 @@ const Players = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchPlayers = (showLoading = true) => {
+  const fetchPlayers = async (showLoading = true) => {
     if (showLoading) {
       setLoading(true);
     }
     
-    fetch(`http://localhost:3001/api/player`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        // Sort the data by the current sort field
-        const sortedData = sortPlayers(data, sortField, sortDirection);
-        setPlayers(sortedData);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching players:", error);
-        setError(error.message);
-        setLoading(false);
+    try {
+      const response = await fetch('http://localhost:3001/api/player');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Fetched players:", data);
+      
+      // Check if current player is in the data
+      if (currentPlayerName) {
+        const playerFound = data.some(p => p.player_id === currentPlayerName);
+        console.log(`Current player "${currentPlayerName}" found in data: ${playerFound}`);
+      }
+      
+      // Sort the data
+      const sortedData = sortPlayers(data, sortField, sortDirection);
+      setPlayers(sortedData);
+    } catch (error) {
+      console.error("Error fetching players:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Force create the current player AND add to the local state
+  const handleCreatePlayer = async () => {
+    if (!currentPlayerName) {
+      setDebugMessage("No player name set. Please set a name first.");
+      return;
+    }
+    
+    setCreatePlayerLoading(true);
+    setDebugMessage(`Creating player "${currentPlayerName}" in the database...`);
+    
+    try {
+      // Create the player in the database
+      const response = await fetch('http://localhost:3001/api/player/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerName: currentPlayerName
+        })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.statusText}`);
+      }
+      
+      const newPlayer = await response.json();
+      console.log("Player created:", newPlayer);
+      
+      setDebugMessage(`Player "${currentPlayerName}" created successfully!`);
+      
+      // Add the new player to the local state immediately (don't wait for refresh)
+      setPlayers(prevPlayers => {
+        // Check if player already exists in the list
+        const playerExists = prevPlayers.some(p => p.player_id === currentPlayerName);
+        
+        if (playerExists) {
+          console.log("Player already exists in the list, no need to add");
+          return prevPlayers; // Return unchanged if player exists
+        }
+        
+        // Add new player to the list and sort
+        const updatedPlayers = [...prevPlayers, newPlayer];
+        return sortPlayers(updatedPlayers, sortField, sortDirection);
+      });
+      
+      // Also refresh the full list from the server to be sure
+      await fetchPlayers(false);
+      
+    } catch (error) {
+      console.error("Error creating player:", error);
+      setDebugMessage(`Error creating player: ${error.message}`);
+    } finally {
+      setCreatePlayerLoading(false);
+    }
   };
 
   const sortPlayers = (playersData, field, direction) => {
     return [...playersData].sort((a, b) => {
-      // Check for the current user's name to highlight in the UI
-      const currentPlayerName = localStorage.getItem('ticTacToePlayerName');
-      
       // Handle string comparison for player_id
       if (field === 'player_id') {
         // Current player should always be at the top when sorting by name
@@ -103,8 +169,8 @@ const Players = () => {
     return sortDirection === 'asc' ? ' ↑' : ' ↓';
   };
 
-  // Get current player name from localStorage
-  const currentPlayerName = localStorage.getItem('ticTacToePlayerName');
+  // Check if current player exists in the list
+  const currentPlayerExists = currentPlayerName && players.some(p => p.player_id === currentPlayerName);
 
   if (loading && players.length === 0) {
     return <div className="loading-indicator">Loading leaderboard data...</div>;
@@ -123,15 +189,59 @@ const Players = () => {
     <div className="leaderboard-container">
       <div className="leaderboard-header">
         <h1>Tic-Tac-Toe Leaderboard</h1>
-        <button 
-          className={`refresh-button ${loading ? 'refreshing' : ''}`} 
-          onClick={() => fetchPlayers()}
-          disabled={loading}
-        >
-          {loading ? 'Refreshing...' : 'Refresh'}
-        </button>
+        <div className="leaderboard-actions">
+          <button 
+            className={`refresh-button ${loading ? 'refreshing' : ''}`} 
+            onClick={() => fetchPlayers()}
+            disabled={loading}
+          >
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+          
+          {currentPlayerName && !currentPlayerExists && (
+            <button 
+              className="create-player-button" 
+              onClick={handleCreatePlayer}
+              disabled={createPlayerLoading}
+              style={{ marginLeft: '10px' }}
+            >
+              {createPlayerLoading ? 'Adding...' : 'Add Me to Leaderboard'}
+            </button>
+          )}
+        </div>
       </div>
       
+      {/* Current player info */}
+      {currentPlayerName && (
+        <div className="current-player-info" style={{
+          margin: '10px 0',
+          padding: '10px',
+          background: currentPlayerExists ? 'rgba(40, 167, 69, 0.1)' : 'rgba(255, 193, 7, 0.1)',
+          borderRadius: '4px'
+        }}>
+          <strong>Current Player:</strong> {currentPlayerName}
+          {!currentPlayerExists && (
+            <div style={{ marginTop: '5px' }}>
+              Your player is not on the leaderboard yet. Click "Add Me to Leaderboard" to add yourself.
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Debug message */}
+      {debugMessage && (
+        <div className="debug-message" style={{
+          margin: '10px 0',
+          padding: '10px',
+          background: '#f8f9fa',
+          border: '1px solid #dee2e6',
+          borderRadius: '4px'
+        }}>
+          {debugMessage}
+        </div>
+      )}
+      
+      {/* Players table */}
       <div className="table-container">
         {Array.isArray(players) && players.length > 0 ? (
           <table className="leaderboard-table">
@@ -167,11 +277,12 @@ const Players = () => {
                 
                 return (
                   <tr 
-                    key={player.id} 
+                    key={player.id || index} 
                     className={`
                       ${index < 3 ? 'top-player' : ''}
                       ${isCurrentPlayer ? 'current-player' : ''}
                     `}
+                    style={isCurrentPlayer ? { fontWeight: 'bold', backgroundColor: 'rgba(76, 175, 80, 0.1)' } : {}}
                   >
                     <td>
                       {player.player_id}
@@ -194,12 +305,10 @@ const Players = () => {
         )}
       </div>
       
-      {/* Message to show if current player isn't on the leaderboard */}
-      {currentPlayerName && !players.some(player => player.player_id === currentPlayerName) && (
-        <div className="player-not-found">
-          <p>Your player name "{currentPlayerName}" is not on the leaderboard yet. Play a game to be added!</p>
-        </div>
-      )}
+      {/* Player count info */}
+      <div className="player-count" style={{ marginTop: '10px', color: '#6c757d' }}>
+        {players.length} player{players.length !== 1 ? 's' : ''} on the leaderboard
+      </div>
     </div>
   );
 };
