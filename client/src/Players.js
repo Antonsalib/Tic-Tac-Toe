@@ -5,7 +5,7 @@ const Players = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortField, setSortField] = useState('win_percentage');
+  const [sortField, setSortField] = useState('total_wins');
   const [sortDirection, setSortDirection] = useState('desc');
   const [refreshInterval, setRefreshInterval] = useState(null);
   const [debugMessage, setDebugMessage] = useState("");
@@ -15,13 +15,20 @@ const Players = () => {
   const currentPlayerName = localStorage.getItem('ticTacToePlayerName');
 
   useEffect(() => {
+    console.log(`Current player from localStorage: "${currentPlayerName}"`);
+    
+    if (currentPlayerName) {
+      // Force player creation if we have a name
+      handleCreatePlayer();
+    }
+    
     // Initial fetch
     fetchPlayers();
     
-    // Set up auto-refresh every 10 seconds 
+    // Set up auto-refresh every 5 seconds (more frequent for better responsiveness)
     const interval = setInterval(() => {
-      fetchPlayers(false); // Silent refresh (don't show loading indicator)
-    }, 10000);
+      fetchPlayers(false); // Silent refresh
+    }, 5000);
     
     setRefreshInterval(interval);
     
@@ -32,7 +39,7 @@ const Players = () => {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPlayerName]);
 
   const fetchPlayers = async (showLoading = true) => {
     if (showLoading) {
@@ -40,6 +47,7 @@ const Players = () => {
     }
     
     try {
+      // Get ALL players with no filtering
       const response = await fetch('http://localhost:3001/api/player');
       
       if (!response.ok) {
@@ -47,20 +55,26 @@ const Players = () => {
       }
       
       const data = await response.json();
-      console.log("Fetched players:", data);
+      console.log(`Fetched ${data.length} players from API:`, data);
       
-      // Check if current player is in the data
+      // Important: Always check if current player exists in the data
       if (currentPlayerName) {
         const playerFound = data.some(p => p.player_id === currentPlayerName);
         console.log(`Current player "${currentPlayerName}" found in data: ${playerFound}`);
+        
+        if (!playerFound) {
+          console.log("Player not found in data, will create now");
+          await handleCreatePlayer();
+          return; // handleCreatePlayer will call fetchPlayers again
+        }
       }
       
-      // Sort the data
+      // Sort the data - always include current player
       const sortedData = sortPlayers(data, sortField, sortDirection);
       setPlayers(sortedData);
     } catch (error) {
       console.error("Error fetching players:", error);
-      setError(error.message);
+      setError("Failed to load leaderboard data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -74,10 +88,10 @@ const Players = () => {
     }
     
     setCreatePlayerLoading(true);
-    setDebugMessage(`Creating player "${currentPlayerName}" in the database...`);
+    setDebugMessage(`Setting up player "${currentPlayerName}" on leaderboard...`);
     
     try {
-      // Create the player in the database
+      // First, create the player in the database
       const response = await fetch('http://localhost:3001/api/player/create', {
         method: 'POST',
         headers: {
@@ -93,31 +107,39 @@ const Players = () => {
       }
       
       const newPlayer = await response.json();
-      console.log("Player created:", newPlayer);
+      console.log("Player created or found:", newPlayer);
       
-      setDebugMessage(`Player "${currentPlayerName}" created successfully!`);
-      
-      // Add the new player to the local state immediately (don't wait for refresh)
-      setPlayers(prevPlayers => {
-        // Check if player already exists in the list
-        const playerExists = prevPlayers.some(p => p.player_id === currentPlayerName);
+      // If the player has no games yet, add a placeholder tie game
+      // This ensures they appear in the leaderboard
+      if (newPlayer.total_games === 0) {
+        console.log("Player has no games, adding a placeholder game");
         
-        if (playerExists) {
-          console.log("Player already exists in the list, no need to add");
-          return prevPlayers; // Return unchanged if player exists
+        const updateResponse = await fetch('http://localhost:3001/api/player/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            playerName: currentPlayerName,
+            result: 'tie'
+          })
+        });
+        
+        if (!updateResponse.ok) {
+          console.warn("Warning: Could not initialize player stats");
+        } else {
+          console.log("Player initialized with placeholder game");
         }
-        
-        // Add new player to the list and sort
-        const updatedPlayers = [...prevPlayers, newPlayer];
-        return sortPlayers(updatedPlayers, sortField, sortDirection);
-      });
+      }
       
-      // Also refresh the full list from the server to be sure
-      await fetchPlayers(false);
+      setDebugMessage(`Player "${currentPlayerName}" is now on the leaderboard!`);
+      
+      // Now fetch all players again to ensure we have the updated list
+      fetchPlayers(false);
       
     } catch (error) {
       console.error("Error creating player:", error);
-      setDebugMessage(`Error creating player: ${error.message}`);
+      setDebugMessage(`Error setting up player: ${error.message}`);
     } finally {
       setCreatePlayerLoading(false);
     }
@@ -125,12 +147,12 @@ const Players = () => {
 
   const sortPlayers = (playersData, field, direction) => {
     return [...playersData].sort((a, b) => {
+      // Always show current player at top
+      if (a.player_id === currentPlayerName) return -1;
+      if (b.player_id === currentPlayerName) return 1;
+      
       // Handle string comparison for player_id
       if (field === 'player_id') {
-        // Current player should always be at the top when sorting by name
-        if (a.player_id === currentPlayerName) return direction === 'asc' ? -1 : 1;
-        if (b.player_id === currentPlayerName) return direction === 'asc' ? 1 : -1;
-        
         return direction === 'asc' 
           ? a[field].localeCompare(b[field])
           : b[field].localeCompare(a[field]);
@@ -238,6 +260,7 @@ const Players = () => {
           borderRadius: '4px'
         }}>
           {debugMessage}
+          {createPlayerLoading && <span> Loading...</span>}
         </div>
       )}
       

@@ -4,6 +4,7 @@ import './PlayerName.css';
 const PlayerName = ({ isOpen, onClose, onSave, savedName }) => {
   const [playerName, setPlayerName] = useState(savedName || '');
   const [error, setError] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     // Reset player name when modal opens with saved name
@@ -12,7 +13,7 @@ const PlayerName = ({ isOpen, onClose, onSave, savedName }) => {
     }
   }, [isOpen, savedName]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validate input
@@ -27,9 +28,60 @@ const PlayerName = ({ isOpen, onClose, onSave, savedName }) => {
       return;
     }
     
-    // Save the player name
-    onSave(trimmedName);
-    onClose();
+    setIsCreating(true);
+    
+    try {
+      // First, create the player in the database
+      const createResponse = await fetch('http://localhost:3001/api/player/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerName: trimmedName
+        })
+      });
+      
+      if (!createResponse.ok) {
+        throw new Error('Failed to create player');
+      }
+      
+      const player = await createResponse.json();
+      console.log("Player created or found:", player);
+      
+      // If the player has no games yet, add a placeholder tie game
+      // This ensures they appear in the leaderboard
+      if (player.total_games === 0) {
+        console.log("New player has no games, adding a placeholder game");
+        
+        const updateResponse = await fetch('http://localhost:3001/api/player/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            playerName: trimmedName,
+            result: 'tie'
+          })
+        });
+        
+        if (!updateResponse.ok) {
+          console.warn("Warning: Could not initialize player stats");
+        } else {
+          console.log("Player initialized with placeholder game");
+        }
+      }
+      
+      // Save the player name locally
+      onSave(trimmedName);
+      onClose();
+      
+    } catch (error) {
+      console.error("Error setting up player:", error);
+      setError("There was a problem setting up your player. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // Handle closing without entering a name
@@ -61,6 +113,7 @@ const PlayerName = ({ isOpen, onClose, onSave, savedName }) => {
               placeholder="Your name"
               autoFocus
               className={error ? 'error' : ''}
+              disabled={isCreating}
             />
             {error && <div className="error-message">{error}</div>}
           </div>
@@ -70,14 +123,16 @@ const PlayerName = ({ isOpen, onClose, onSave, savedName }) => {
               type="button" 
               className="cancel-button"
               onClick={handleCancel}
+              disabled={isCreating}
             >
               Cancel
             </button>
             <button 
               type="submit" 
               className="save-button"
+              disabled={isCreating}
             >
-              Save
+              {isCreating ? 'Setting up...' : 'Save'}
             </button>
           </div>
         </form>
