@@ -132,10 +132,24 @@ function TicTacToe() {
     const validName = name.trim() ? name : 'Guest Player';
     setPlayerName(validName);
     localStorage.setItem('ticTacToePlayerName', validName);
+    
+    // Create player entry in database when name is set
+    fetch('http://localhost:3001/api/player/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playerName: validName
+      })
+    })
+    .then(response => response.json())
+    .catch(error => {
+      console.error('Error creating player:', error);
+    });
   };
 
   const logMove = useCallback((player, row, col, gameResult = null) => {
-    
     fetch('http://localhost:3001/api/int', {
       method: 'POST',
       headers: {
@@ -158,7 +172,6 @@ function TicTacToe() {
     .catch(error => {
       console.error('Error logging move:', error);
     });
-    
   }, [status]);
 
   const makeAIMove = useCallback(() => {
@@ -199,6 +212,21 @@ function TicTacToe() {
   useEffect(() => {
     if (!playerName) {
       setIsNameOpen(true);
+    } else {
+      // Create player in database when component loads with existing name
+      fetch('http://localhost:3001/api/player/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerName
+        })
+      })
+      .then(response => response.json())
+      .catch(error => {
+        console.error('Error creating player on load:', error);
+      });
     }
   }, [playerName]);
 

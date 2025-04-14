@@ -175,7 +175,7 @@ const Players = () => {
                   >
                     <td>
                       {player.player_id}
-                      {isCurrentPlayer && <span className="you-badge">You</span>}
+                      {isCurrentPlayer && <span className="you-badge"> (You)</span>}
                     </td>
                     <td>{player.total_wins}</td>
                     <td>{player.total_losses}</td>
@@ -193,6 +193,13 @@ const Players = () => {
           </div>
         )}
       </div>
+      
+      {/* Message to show if current player isn't on the leaderboard */}
+      {currentPlayerName && !players.some(player => player.player_id === currentPlayerName) && (
+        <div className="player-not-found">
+          <p>Your player name "{currentPlayerName}" is not on the leaderboard yet. Play a game to be added!</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import sequelize from '../config/database.js';
-import { Op } from 'sequelize'; // ✅ Import Op for operators like [Op.ne]
+import { Op } from 'sequelize'; //  Import Op for operators like [Op.ne]
 import Player from './player.js';
 import Move from './int.js';
 
