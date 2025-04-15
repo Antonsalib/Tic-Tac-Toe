@@ -269,10 +269,14 @@ function TicTacToe() {
   }, [playerName]);
 
   useEffect(() => {
-    if (currentPlayer === "O" && status === 'ongoing') {
-      makeAIMove();
+    if (currentPlayer === "O") {
+      const result = checkGameStatus();
+      if (result === null && status === 'ongoing') {
+        makeAIMove();
+      }
     }
-  }, [currentPlayer, status, makeAIMove]);
+  }, [currentPlayer, status, makeAIMove, checkGameStatus]);
+  
 
   useEffect(() => {
     const result = checkGameStatus();
