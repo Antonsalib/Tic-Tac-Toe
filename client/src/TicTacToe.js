@@ -20,12 +20,23 @@ function TicTacToe() {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [status, setStatus] = useState("ongoing");
   const [loading, setLoading] = useState(false);
+  const [gameId, setGameId] = useState(null);
   
   // Player name handling
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('ticTacToePlayerName') || '';
   });
   const [isNameOpen, setIsNameOpen] = useState(false);
+
+  // Generate a new game ID when starting a new game
+  const generateGameId = useCallback(() => {
+    return Date.now().toString();
+  }, []);
+
+  // Initialize a new game with a unique ID
+  useEffect(() => {
+    setGameId(generateGameId());
+  }, [generateGameId]); // Include generateGameId in the dependency array
 
   const checkGameStatus = useCallback(() => {
     // Rows
@@ -81,17 +92,34 @@ function TicTacToe() {
     if (!playerName) return;
     
     const dbPlayerName = playerName.trim() || 'Guest Player';
+    console.log(`Updating leaderboard for ${dbPlayerName} with result: ${result}`);
 
-    // Update human player stats
-    fetch('http://localhost:3001/api/player/update', {
+    // Ensure player exists first
+    fetch('http://localhost:3001/api/player/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        playerName: dbPlayerName,
-        result: result
+        playerName: dbPlayerName
       })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to ensure player exists');
+      }
+      
+      // Now update the player's stats
+      return fetch('http://localhost:3001/api/player/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerName: dbPlayerName,
+          result: result
+        })
+      });
     })
     .then(response => {
       if (!response.ok) {
@@ -144,18 +172,24 @@ function TicTacToe() {
       })
     })
     .then(response => response.json())
+    .then(data => {
+      console.log('Player created or found:', data);
+    })
     .catch(error => {
       console.error('Error creating player:', error);
     });
   };
 
   const logMove = useCallback((player, row, col, gameResult = null) => {
+    if (!gameId) return;
+    
     fetch('http://localhost:3001/api/int', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        game_id: gameId,
         player,
         row,
         col,
@@ -172,7 +206,7 @@ function TicTacToe() {
     .catch(error => {
       console.error('Error logging move:', error);
     });
-  }, [status]);
+  }, [status, gameId]);
 
   const makeAIMove = useCallback(() => {
     setLoading(true);
@@ -262,6 +296,9 @@ function TicTacToe() {
         })
       })
       .then(response => response.json())
+      .then(data => {
+        console.log('Player created or found on load:', data);
+      })
       .catch(error => {
         console.error('Error creating player on load:', error);
       });
@@ -348,6 +385,8 @@ function TicTacToe() {
     ]);
     setCurrentPlayer("X");
     setStatus("ongoing");
+    // Generate a new game ID for the new game
+    setGameId(generateGameId());
   };
 
   const resetScoreboard = () => {
