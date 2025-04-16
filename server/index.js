@@ -38,7 +38,7 @@ app.get("/api/game", async (req, res) => {
   }
 
   const prompt = [];
-  prompt.push("You are an expert tic tac toe player that only moves when it's your turn, making only one move at a time.");
+  prompt.push("You are an expert tic tac toe player that only moves when it's your turn, making only one move at a time.  You play using a minmax algorithm");
   prompt.push("You play as O. Focus on winning, play extremely well.");
   prompt.push("For the JSON content I provide as input, please give me JSON output in the same format.");
   prompt.push("{board:[[],[],[]]}");
