@@ -28,6 +28,9 @@ function TicTacToe() {
   });
   const [isNameOpen, setIsNameOpen] = useState(false);
 
+  const [playerShape, setPlayerShape] = useState('X'); // Player starts with square by default
+  const aiShape = playerShape === 'X' ? 'O' : playerShape === 'O' ? '★' : 'X'; // AI picks something else
+
   // Generate a new game ID when starting a new game
   const generateGameId = useCallback(() => {
     return Date.now().toString();
@@ -357,7 +360,7 @@ function TicTacToe() {
       status === "ongoing"
     ) {
       const newBoard = board.map(r => [...r]);
-      newBoard[row][col] = "X";
+      newBoard[row][col] = playerShape;
       setBoard(newBoard);
       setCurrentPlayer("O");
 
@@ -425,12 +428,12 @@ function TicTacToe() {
 
       <div className="scoreboard">
         <div className="score-item">
-          <span className="player-label">{playerName || 'Player'} (X)</span>
-          <span className="score">{scores.X}</span>
+        <span className="player-label">{playerName || 'Player'} ({playerShape})</span>
+        <span className="score">{scores.X}</span>
         </div>
         <div className="score-item">
-          <span className="player-label">AI (O)</span>
-          <span className="score">{scores.O}</span>
+        <span className="player-label">AI ({aiShape})</span>
+        <span className="score">{scores.O}</span>
         </div>
         <div className="score-item">
           <span className="player-label">Ties</span>
@@ -443,6 +446,20 @@ function TicTacToe() {
           Reset Scores
         </button>
       </div>
+
+      <div className="shape-selector">
+  <label htmlFor="shape-select">Choose your shape: </label>
+  <select
+    id="shape-select"
+    value={playerShape}
+    onChange={(e) => setPlayerShape(e.target.value)}
+    disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+  >
+    <option value="X">Square</option>
+    <option value="O">Oval</option>
+    <option value="★">Star</option>
+  </select>
+</div>
 
       <h1>Tic Tac Toe</h1>
       <div className="board">
