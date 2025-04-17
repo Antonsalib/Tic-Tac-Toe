@@ -386,8 +386,8 @@ function TicTacToe() {
         onClick={() => handleCellClick(row, col)}
         disabled={loading || status !== 'ongoing'}
         className="cell-button">
-        {board[row][col]}
-      </button>
+{renderShape(board[row][col])}
+</button>
     );
   };
 
