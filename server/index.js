@@ -15,7 +15,7 @@ app.use(express.json());
 syncModels();
 
 
-const OPENAI_API_KEY = "KEY HERE";
+const OPENAI_API_KEY="insert eky";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const aiModel = "gpt-4-turbo-preview";
 

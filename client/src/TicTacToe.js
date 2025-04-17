@@ -362,6 +362,20 @@ function TicTacToe() {
     }
   };
 
+  const renderShape = (value) => {
+    switch (value) {
+      case 'X': // square
+        return <div style={{ width: 32, height: 32, backgroundColor: '#333' }} />;
+      case 'O': // oval
+        return <div style={{ width: 40, height: 25, backgroundColor: '#333', borderRadius: '50%' }} />;
+      case '★': // star
+        return <span style={{ fontSize: '28px', color: '#f0a500' }}>★</span>;
+      default:
+        return null;
+    }
+  };
+  
+
   const renderCell = (row, col) => {
     return (
       <button
