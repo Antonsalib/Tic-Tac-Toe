@@ -154,16 +154,18 @@ body.dark-mode .score {
 .cell-button {
   width: 80px;
   height: 80px;
-  background-color: #111;
-  border: 2px solid #00ffcc;
-  border-radius: 4px;
-  font-size: 36px;
-  color: #00ffcc;
-  text-shadow: 0 0 5px #00ffcc;
-  transition: background-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 32px;
+  color: white;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease-in-out;
 }
 
 .cell-button:hover {
-  background-color: #1a1a1a;
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
