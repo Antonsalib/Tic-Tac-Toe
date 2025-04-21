@@ -150,3 +150,19 @@ body.dark-mode .player-label {
 body.dark-mode .score {
   color: #f0a500;
 }
+
+.end-round-button {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  background-color: #ff5555;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.end-round-button:hover {
+  background-color: #cc4444;
+}
+

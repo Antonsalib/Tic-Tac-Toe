@@ -474,13 +474,23 @@ function TicTacToe() {
       <div className="status-text">Status: {status}</div>
 
       {status !== "ongoing" && (
-        <button
-          className="replay-button"
-          onClick={resetGame}
-        >
-          Play Again
-        </button>
-      )}
+  <button
+    className="replay-button"
+    onClick={resetGame}
+  >
+    Play Again
+  </button>
+)}
+
+{status === "ongoing" && (
+  <button
+    className="end-round-button"
+    onClick={resetGame}
+  >
+    End Round
+  </button>
+)}
+
 
       {/* Player Name Modal */}
       <PlayerName
