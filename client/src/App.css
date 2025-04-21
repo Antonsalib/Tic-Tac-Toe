@@ -1,12 +1,11 @@
 /* Font & global setup */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #141421);
-  color: #ffffff;
   margin: 0;
   height: 100%;
   overflow: hidden;
 }
+
 
 /* Ensure full height for html and body */
 html, body {
