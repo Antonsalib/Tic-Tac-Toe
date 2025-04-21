@@ -27,6 +27,10 @@ body.light-mode {
   background-color: #ffffff;
   color: #000000;
 }
+body.light-mode .scoreboard {
+  background-color: #f2f2f2; /* light grey */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
 
 body.light-mode .status-text,
 body.light-mode .player-label,
@@ -39,6 +43,10 @@ body.light-mode .shape-selector label {
 body.dark-mode {
   background-color: #121212;
   color: #ffffff;
+}
+body.dark-mode .scoreboard {
+  background-color: #2c2c2c;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
 /* Footer should always stay at the bottom */
