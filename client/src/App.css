@@ -54,8 +54,10 @@ footer {
 .board-row {
   display: flex;
   justify-content: center;
-  gap: 1rem;  /* Space between each cell */
+  gap: 16px; /* space between boxes horizontally */
+  margin-bottom: 16px; /* space between rows vertically */
 }
+
 
 /* Style the individual cells (buttons) */
 .cell-button {
