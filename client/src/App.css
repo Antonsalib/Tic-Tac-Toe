@@ -27,6 +27,15 @@ body.light-mode {
   background-color: #ffffff;
   color: #000000;
 }
+
+body.light-mode .status-text,
+body.light-mode .player-label,
+body.light-mode .score,
+body.light-mode h1,
+body.light-mode .shape-selector label {
+  color: #000000;
+}
+
 body.dark-mode {
   background-color: #121212;
   color: #ffffff;
@@ -52,8 +61,10 @@ footer {
   align-items: center;
   min-height: 100vh;
   flex: 1;
+  padding-bottom: 80px;
   overflow: hidden;
 }
+
 
 /* Shape selector dropdown */
 .shape-selector {
