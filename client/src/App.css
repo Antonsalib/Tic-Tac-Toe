@@ -14,13 +14,14 @@ html, body {
   flex-direction: column;
 }
 
-/* Main container to stretch to full height */
 .App {
   text-align: center;
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
+
 
 /* Light/Dark Mode (optional support) */
 body.light-mode {
@@ -65,12 +66,20 @@ footer {
 .board-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* was center */
   align-items: center;
   min-height: 100vh;
   flex: 1;
-  padding-bottom: 80px;
+  padding: 20px 0 100px; /* top padding reduced, bottom increased for footer room */
   overflow: hidden;
+}
+
+h1 {
+  margin-top: 0.5rem;
+}
+
+.scoreboard {
+  margin-top: 10px;
 }
 
 
