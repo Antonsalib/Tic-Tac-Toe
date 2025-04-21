@@ -151,18 +151,22 @@ body.dark-mode .score {
   color: #f0a500;
 }
 
-.end-round-button {
-  padding: 10px 20px;
-  font-size: 1.1rem;
-  background-color: #ff5555;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.2s;
+.cell-button {
+  width: 80px;
+  height: 80px;
+  background-color: #fdfdfd;
+  border: 3px solid #ccc;
+  border-radius: 16px;
+  font-size: 36px;
+  font-weight: bold;
+  color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.end-round-button:hover {
-  background-color: #cc4444;
+.cell-button:hover {
+  background-color: #f0f4f8;
+  transform: scale(1.05);
 }
+
 
