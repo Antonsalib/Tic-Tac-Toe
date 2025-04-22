@@ -54,12 +54,7 @@ const Players = () => {
     return () => clearInterval(intervalId);
   }, [fetchPlayers]);
 
-  // Sorting function to compare two players based on the selected field
   const comparePlayers = (a, b) => {
-    // Always display the current player at the top
-    if (a.player_id === currentPlayerName) return -1;
-    if (b.player_id === currentPlayerName) return 1;
-
     let aVal, bVal;
     if (sortField === "win_percentage") {
       aVal = a.total_games > 0 ? (a.total_wins / a.total_games) * 100 : 0;
@@ -76,6 +71,7 @@ const Players = () => {
         : bVal.toString().localeCompare(aVal.toString());
     }
   };
+  
 
   const sortedPlayers = [...players].sort(comparePlayers);
 
@@ -151,10 +147,8 @@ const Players = () => {
                     : "0.0";
                 const isCurrent = player.player_id === currentPlayerName;
                 return (
-                  <tr
-                    key={player.player_id}
-                    className={isCurrent ? "top-player" : ""}
-                  >
+                  <tr key={player.player_id} className={isCurrent ? "highlighted-player" : ""}>
+
                     <td>{player.player_id}</td>
                     <td>{player.total_wins}</td>
                     <td>{player.total_losses}</td>

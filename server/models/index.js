@@ -2,7 +2,7 @@
 import sequelize from "../config/database.js";
 import { Op } from "sequelize";
 import Player from "./player.js"; // Corrected path: player.js is in the same directory
-import Move from "./int.js";      // Corrected path: int.js is in the same directory
+
 
 const syncModels = async () => {
   try {
@@ -63,4 +63,4 @@ const syncModels = async () => {
   }
 };
 
-export { sequelize, Player, Move, syncModels };
+export { sequelize, Player, syncModels };
