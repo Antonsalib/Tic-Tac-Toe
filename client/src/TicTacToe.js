@@ -1,6 +1,8 @@
 import "./App.css";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import PlayerName from "./PlayerName";
+import { playSound } from './PlaySound';
+
 
 function TicTacToe() {
   // Local game scores
@@ -261,7 +263,8 @@ function TicTacToe() {
         } else {
           console.warn("Could not detect AI move in response");
         }
-        
+        playSound('/sound/bubble-pop-2-293341.mp3');
+
         // Update the board with AI's move
         setBoard(aiBoard);
         setCurrentPlayer("X");
@@ -362,6 +365,7 @@ function TicTacToe() {
       const newBoard = board.map(r => [...r]);
       newBoard[row][col] = playerShape;
       setBoard(newBoard);
+      playSound('/sound/select-sound-121244.mp3');
       setCurrentPlayer("O");
 
       const result = checkGameStatus(); // Get current result in case it's the last move
