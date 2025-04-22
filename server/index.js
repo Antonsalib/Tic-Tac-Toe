@@ -17,9 +17,9 @@ app.use(express.json());
 syncModels();
 
 // Set up OpenAI (replace "KEY HERE" with your actual OpenAI API key)
-const OPENAI_API_KEY = "insert key here";
+const OPENAI_API_KEY = "";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });  
-const aiModel = "gpt-4-turbo-preview";
+const aiModel = "gpt-4-turbo";
 
 // Endpoint for generating the AI move
 app.get("/api/game", async (req, res) => {

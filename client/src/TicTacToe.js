@@ -28,9 +28,9 @@ function TicTacToe() {
   });
   const [isNameOpen, setIsNameOpen] = useState(false);
 
-  const [playerShape, setPlayerShape] = useState('X'); // Player starts with square by default
-  const aiShape = playerShape === 'X' ? 'O' : playerShape === 'O' ? '★' : 'X'; // AI picks something else
-
+  const [playerShape, setPlayerShape] = useState("X"); // default shape is X
+  const aiShape = playerShape === "X" ? "O" : "X"; // default AI is O
+  
   // Generate a new game ID when starting a new game
   const generateGameId = useCallback(() => {
     return Date.now().toString();
@@ -371,16 +371,19 @@ function TicTacToe() {
 
   const renderShape = (value) => {
     switch (value) {
-      case 'X': // square
-        return <div style={{ width: 32, height: 32, backgroundColor: '#333' }} />;
-      case 'O': // oval
-        return <div style={{ width: 40, height: 25, backgroundColor: '#333', borderRadius: '50%' }} />;
-      case '★': // star
-        return <span style={{ fontSize: '28px', color: '#f0a500' }}>★</span>;
+      case 'X':
+        return <i className="ri-close-large-line" style={{ fontSize: '32px', color: '#f0a500' }}></i>;
+      case 'O':
+        return <i className="ri-circle-line" style={{ fontSize: '32px', color: '#333' }}></i>;
+      case '◼':
+        return <i className="ri-square-line" style={{ fontSize: '32px', color: '#3b82f6' }}></i>;
+      case '🔺':
+        return <i className="ri-triangle-line" style={{ fontSize: '32px', color: '#ef4444' }}></i>;
       default:
         return null;
     }
   };
+  
   
 
   const renderCell = (row, col) => {
@@ -450,15 +453,16 @@ function TicTacToe() {
       <div className="shape-selector">
   <label htmlFor="shape-select">Choose your shape: </label>
   <select
-    id="shape-select"
-    value={playerShape}
-    onChange={(e) => setPlayerShape(e.target.value)}
-    disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
-  >
-    <option value="X">Square</option>
-    <option value="O">Oval</option>
-    <option value="★">Star</option>
-  </select>
+  value={playerShape}
+  onChange={(e) => setPlayerShape(e.target.value)}
+  disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+>
+  <option value="X">X</option>
+  <option value="O">O</option>
+  <option value="◼">Square</option>
+  <option value="🔺">Triangle</option>
+</select>
+
 </div>
 
       <h1>Tic Tac Toe</h1>
