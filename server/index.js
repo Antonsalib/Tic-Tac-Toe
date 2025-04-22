@@ -3,7 +3,6 @@ import cors from "cors";
 import OpenAI from "openai";
 import { Op, literal } from "sequelize";
 import Player from "./models/player.js";
-import Move from "./models/int.js";
 import { syncModels } from "./models/index.js";
 import sequelize from "./config/database.js"; // Import the Sequelize instance
 
@@ -17,7 +16,7 @@ app.use(express.json());
 syncModels();
 
 // Set up OpenAI (replace "KEY HERE" with your actual OpenAI API key)
-const OPENAI_API_KEY = "insert key here";
+const OPENAI_API_KEY = "KEY HERE";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });  
 const aiModel = "gpt-4-turbo-preview";
 
