@@ -99,4 +99,20 @@
     display: block;
     width: 100%;
   }
+  .mute-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .mute-button:hover {
+    background-color: #666;
+  }
+  
 }

@@ -3,7 +3,6 @@ import { useState, useEffect, Fragment, useCallback } from "react";
 import PlayerName from "./PlayerName";
 import { playSound } from './PlaySound';
 
-
 function TicTacToe() {
   // Local game scores
   const [scores, setScores] = useState(() => {
@@ -23,6 +22,9 @@ function TicTacToe() {
   const [status, setStatus] = useState("ongoing");
   const [loading, setLoading] = useState(false);
   const [gameId, setGameId] = useState(null);
+  
+
+  
   
   // Player name handling
   const [playerName, setPlayerName] = useState(() => {
@@ -333,16 +335,21 @@ function TicTacToe() {
         newScores.X += 1;
         // Update leaderboard - human won
         updateLeaderboard('win');
+        playSound('/sound/success_bell-6776.mp3');
       } else if (result === 'O') {
         newStatus = 'O wins';
         newScores.O += 1;
         // Update leaderboard - human lost
         updateLeaderboard('loss');
+        playSound('/sound/080205_life-lost-game-over-89697.mp3');  
+
       } else if (result === 'Tie') {
         newStatus = "It's a tie";
         newScores.Ties += 1;
         // Update leaderboard - tie
         updateLeaderboard('tie');
+        playSound('/sound/achievement-video-game-type-1-230515.mp3');
+
       }
 
       setScores(newScores);
@@ -498,6 +505,7 @@ function TicTacToe() {
     End Round
   </button>
 )}
+
 
 
       {/* Player Name Modal */}

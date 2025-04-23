@@ -3,14 +3,22 @@ import React, { useState, useEffect } from "react";
 import { Link, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Players from "./Players";
+import { setMute } from './PlaySound';  // ✅ Import the mute controller
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [muted, setMutedState] = useState(false);  // ✅ Mute state
 
   useEffect(() => {
     document.body.className = darkMode ? "dark-mode" : "light-mode";
   }, [darkMode]);
+
+  const toggleMute = () => {
+    const newMuteState = !muted;
+    setMutedState(newMuteState);
+    setMute(newMuteState);  
+  };
 
   return (
     <>
@@ -34,6 +42,11 @@ const Navbar = () => {
               className="theme-toggle"
             >
               {darkMode ? "Light Mode" : "Dark Mode"}
+            </button>
+          </li>
+          <li>
+            <button onClick={toggleMute} className="mute-button">
+              {muted ? 'Unmute 🔊' : 'Mute 🔇'}
             </button>
           </li>
         </ul>
