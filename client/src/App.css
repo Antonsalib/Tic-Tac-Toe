@@ -3,9 +3,8 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto; /* Allow scrolling */
 }
-
 
 /* Ensure full height for html and body */
 html, body {
@@ -20,8 +19,8 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  padding-bottom: 60px; /* Give space for fixed footer */
 }
-
 
 /* Light/Dark Mode (optional support) */
 body.light-mode {
@@ -29,10 +28,9 @@ body.light-mode {
   color: #000000;
 }
 body.light-mode .scoreboard {
-  background-color: #f2f2f2; /* light grey */
+  background-color: #f2f2f2;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
-
 body.light-mode .status-text,
 body.light-mode .player-label,
 body.light-mode .score,
@@ -40,7 +38,6 @@ body.light-mode h1,
 body.light-mode .shape-selector label {
   color: #000000;
 }
-
 body.dark-mode {
   background-color: #121212;
   color: #ffffff;
@@ -50,7 +47,7 @@ body.dark-mode .scoreboard {
   box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
-/* Footer should always stay at the bottom */
+/* Footer */
 footer {
   background-color: #333;
   color: white;
@@ -60,30 +57,59 @@ footer {
   bottom: 0;
   left: 0;
   width: 100%;
+  z-index: 1000;
 }
 
 /* Game Board Container */
 .board-container {
+  flex: 1;
+  padding: 20px 0 120px; /* space at bottom for footer */
+  overflow: auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* was center */
   align-items: center;
-  min-height: 100vh;
-  flex: 1;
-  padding: 20px 0 100px; /* top padding reduced, bottom increased for footer room */
-  overflow: hidden;
 }
 
 h1 {
-  margin-top: 0.5rem;
+  font-size: 2.5rem;
+  color: #f0a500;
+  font-weight: bold;
+  margin: 0.5rem 0 1rem;
 }
 
+/* Scoreboard */
 .scoreboard {
-  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 10px 0 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+.player-label {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.score {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f0a500;
 }
 
-
-/* Shape selector dropdown */
+/* Shape selector */
 .shape-selector {
   margin: 1rem 0;
   font-size: 1rem;
@@ -102,23 +128,16 @@ h1 {
   color: #000;
 }
 
-/* Game title */
-h1 {
-  font-size: 2.5rem;
-  color: #f0a500;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-/* Board rows & spacing */
+/* Board rows */
 .board-row {
   display: flex;
   justify-content: center;
   gap: 16px;
   margin-bottom: 16px;
+  flex-wrap: wrap; /* allow wrapping on smaller screens */
 }
 
-/* Glassmorphism cell buttons */
+/* Glassmorphism buttons */
 .cell-button {
   width: 80px;
   height: 80px;
@@ -172,7 +191,6 @@ button {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   margin: 10px 8px;
 }
-
 .replay-button:hover,
 .end-round-button:hover,
 .change-name-button:hover,
@@ -180,35 +198,3 @@ button {
   background-color: #d48f00;
   transform: scale(1.05);
 }
-
-/* Scoreboard */
-.scoreboard {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 20px;
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-.score-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 100px;
-}
-.player-label {
-  font-size: 0.95rem;
-  font-weight: bold;
-  color: #ccc;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.score {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f0a500;
-}
-
