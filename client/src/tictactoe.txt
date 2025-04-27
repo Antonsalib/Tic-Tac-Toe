@@ -1,3 +1,7 @@
+// added to keep track of most recent working version of Failed
+
+
+
 import "./App.css";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import PlayerName from "./PlayerName";
@@ -6,11 +10,7 @@ import { playSound } from './PlaySound';
 function TicTacToe() {
   // ===== STATE MANAGEMENT =====
   // Game state
-  const [board, setBoard] = useState([
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""]
-  ]);
+  const [board, setBoard] = useState([["", "", ""], ["", "", ""], ["", "", ""]]);
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [status, setStatus] = useState("ongoing");
   const [loading, setLoading] = useState(false);
