@@ -5,13 +5,12 @@
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "babel-jest": "^24.9.0",
     "openai": "^4.94.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.3.0",
+    "react-router-dom": "^7.5.3",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -39,5 +38,10 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "devDependencies": {
+    "@testing-library/react": "^16.3.0",
+    "jest": "^27.5.1",
+    "msw": "^2.7.5"
+  }
 }
