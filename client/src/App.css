@@ -1,101 +1,124 @@
-/* Font & global setup */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  height: 100%;
-  overflow-y: auto; /* Allow scrolling */
-}
-
-/* Ensure full height for html and body */
+/* Font & Global Setup */
 html, body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   height: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* Allow scrolling */
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.App {
-  text-align: center;
+/* Main container */
+main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  padding-bottom: 60px; /* Give space for fixed footer */
+  justify-content: flex-start;
+  padding: 20px 16px 120px;
+  box-sizing: border-box;
 }
 
-/* Light/Dark Mode (optional support) */
+/* Board Container */
+.board-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0px;
+  padding-bottom: 80px;
+}
+
+/* Title */
+h1 {
+  font-size: 2.5rem;
+  color: #f0a500;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Light Mode */
 body.light-mode {
   background-color: #ffffff;
   color: #000000;
 }
+
 body.light-mode .scoreboard {
   background-color: #f2f2f2;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
+
 body.light-mode .status-text,
 body.light-mode .player-label,
 body.light-mode .score,
 body.light-mode h1,
 body.light-mode .shape-selector label {
-  color: #000000;
+  color: #000;
 }
+
+body.light-mode select.mode-button {
+  background-color: #f2f2f2;
+  color: #000000;
+  border: 2px solid #ccc;
+}
+
+body.light-mode select.mode-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Dark Mode */
 body.dark-mode {
-  background-color: #121212;
+  background-color: #0d0d0d;
   color: #ffffff;
 }
+
 body.dark-mode .scoreboard {
-  background-color: #2c2c2c;
-  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.08);
 }
 
-/* Footer */
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-/* Game Board Container */
-.board-container {
-  flex: 1;
-  padding: 20px 0 120px; /* space at bottom for footer */
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-h1 {
-  font-size: 2.5rem;
+body.dark-mode .mode-button,
+body.dark-mode .cell-button,
+body.dark-mode .reset-scoreboard-button,
+body.dark-mode .replay-button,
+body.dark-mode .end-round-button {
+  background-color: #1c1c1c;
   color: #f0a500;
-  font-weight: bold;
-  margin: 0.5rem 0 1rem;
+  border: 2px solid #f0a500;
+}
+
+body.dark-mode .mode-button:hover,
+body.dark-mode .replay-button:hover,
+body.dark-mode .end-round-button:hover {
+  background-color: #292929;
 }
 
 /* Scoreboard */
 .scoreboard {
+  background-color: #f5f5f5;
+  border-radius: 10px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin: 10px 0 20px;
-  background-color: rgba(255, 255, 255, 0.1);
+  gap: 20px;
   padding: 15px;
-  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
+
+/* Score Item */
 .score-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 100px;
 }
+
+/* Player Label */
 .player-label {
   font-size: 0.95rem;
   font-weight: bold;
@@ -103,41 +126,30 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+/* Score */
 .score {
   font-size: 2rem;
   font-weight: 700;
   color: #f0a500;
 }
 
-/* Shape selector */
-.shape-selector {
-  margin: 1rem 0;
-  font-size: 1rem;
-  color: #ccc;
-}
-.shape-selector label {
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-.shape-selector select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #aaa;
-  font-size: 1rem;
-  background-color: #fff;
-  color: #000;
+/* Status Text */
+.status-text {
+  font-size: 1.6rem;
+  margin-top: 1.5rem;
+  font-weight: 700;
 }
 
-/* Board rows */
+/* Board Row */
 .board-row {
   display: flex;
   justify-content: center;
   gap: 16px;
   margin-bottom: 16px;
-  flex-wrap: wrap; /* allow wrapping on smaller screens */
 }
 
-/* Glassmorphism buttons */
+/* Cell Button */
 .cell-button {
   width: 80px;
   height: 80px;
@@ -154,24 +166,30 @@ h1 {
   justify-content: center;
   cursor: pointer;
 }
+
 .cell-button:hover {
   transform: scale(1.05);
   border-color: rgba(255, 255, 255, 0.6);
 }
+
 .cell-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-/* Status text */
-.status-text {
-  font-size: 1.4rem;
-  margin-top: 1.5rem;
-  font-weight: 600;
-  color: #ddd;
+/* Footer */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 
-/* Buttons - Unified Styling */
+/* Buttons */
 button {
   font-family: inherit;
   font-weight: 500;
@@ -182,19 +200,172 @@ button {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Replay, End Round, Reset Scoreboard, Change Name, Mode Buttons */
 .replay-button,
 .end-round-button,
 .change-name-button,
-.reset-scoreboard-button {
+.reset-scoreboard-button,
+.mode-button {
   background-color: #f0a500;
   color: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   margin: 10px 8px;
 }
+
 .replay-button:hover,
 .end-round-button:hover,
 .change-name-button:hover,
-.reset-scoreboard-button:hover {
+.reset-scoreboard-button:hover,
+.mode-button:hover {
   background-color: #d48f00;
   transform: scale(1.05);
+}
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+/* Game Mode Selector */
+.game-mode-selector {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Mode Button Specific */
+.mode-button {
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 8px;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 16px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-button i {
+  font-size: 18px;
+}
+
+.mode-button:hover {
+  background-color: #d0d0d0;
+}
+
+.mode-button.active-mode {
+  background-color: #f0a500;
+  color: white;
+}
+
+.mode-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dropdown (Select inside Mode Button) */
+select.mode-button {
+  background-color: #ddd;
+  color: black;
+  padding: 8px 16px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+select.mode-button:hover {
+  background-color: #ccc;
+}
+
+/* Shape Selector */
+.shape-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.shape-selector label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: inherit; /* Light or dark */
+}
+
+/* Custom Select Styling */
+.shape-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.shape-select {
+  appearance: none;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 30px 10px 12px;
+  width: 100%;
+}
+
+.select-arrow {
+  color: #888;
+  font-size: 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.shape-select:focus {
+  border-color: #f0a500;
+  outline: none;
+}
+
+/* Player Name Styling */
+.player-label-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Edit Icon */
+.edit-icon {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.edit-icon:hover {
+  color: #f0a500;
+}
+
+.edit-icon i {
+  font-size: 16px;
 }
