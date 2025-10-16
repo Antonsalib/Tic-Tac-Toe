@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
@@ -15,9 +16,7 @@ app.use(express.json());
 // Synchronize your models (this also seeds the AI Player and test data as needed)
 syncModels();
 
-// Set up OpenAI (replace "KEY HERE" with your actual OpenAI API key)
-const OPENAI_API_KEY = "KEY HERE";
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });  
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const aiModel = "gpt-4.1";
 
 // Endpoint for generating the AI move

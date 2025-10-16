@@ -13,9 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
-    "openai": "^4.94.0",
+    "openai": "^4.104.0",
     "sequelize": "^6.37.6",
     "sqlite3": "^5.1.7"
   }
