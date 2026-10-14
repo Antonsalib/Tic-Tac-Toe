@@ -49,7 +49,7 @@ const Navbar = () => {
           {/* Background Color Dropdown replaces Dark Mode toggle */}
           <li>
   <select
-    className="mode-button"
+    className="nav-control background-select"
     value={backgroundColor}
     onChange={(e) => {
       const value = e.target.value;
@@ -59,11 +59,6 @@ const Navbar = () => {
       } else {
         setDarkMode(false); // disable dark mode if choosing color
       }
-    }}
-    style={{
-      minWidth: "160px",
-      color: "black",             // <-- force text black
-      backgroundColor: "white"    // <-- background white
     }}
   >
     <option value="default">Default (Light/Dark)</option>
@@ -81,7 +76,7 @@ const Navbar = () => {
             <li>
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="theme-toggle"
+                className="nav-control theme-toggle"
               >
                 {darkMode ? "Light Mode" : "Dark Mode"}
               </button>
@@ -90,7 +85,7 @@ const Navbar = () => {
 
           {/* Mute Button */}
           <li>
-            <button onClick={toggleMute} className="mute-button">
+            <button onClick={toggleMute} className="nav-control mute-button">
               {muted ? 'Unmute 🔊' : 'Mute 🔇'}
             </button>
           </li>

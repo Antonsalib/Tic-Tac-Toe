@@ -20,49 +20,50 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Nav links (desktop view) */
+/* Nav links and controls */
 .nav-links {
-  display: flex;              
-  justify-content: space-evenly;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  list-style: none; 
+  gap: 8px;
+  list-style: none;
   margin: 0;
   padding: 0;
-  width: 40%; 
-  background-color: #444;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
 }
 
-.nav-links li a {
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
+.nav-links li a,
+.nav-control {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  box-sizing: border-box;
   padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background-color: transparent;
+  color: white;
+  font: inherit;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.nav-links li a:hover {
-  background-color: #444;
+.nav-links li a:hover,
+.nav-control:hover {
+  background-color: #383838;
+  border-color: #f0a500;
   color: #f0a500;
 }
 
-/* Theme toggle button */
-.theme-toggle {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.background-select {
+  min-width: 160px;
+  color-scheme: dark;
 }
 
-.theme-toggle:hover {
-  background-color: #666;
+.background-select option {
+  background-color: #222;
+  color: white;
 }
 
 /* Menu toggle (mobile only) */
@@ -77,20 +78,24 @@
 
 /* Mobile styling */
 @media screen and (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
   .menu-toggle {
     display: block;
   }
 
   .nav-links {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 8px;
     background-color: #222;
     width: 100%;
     margin-top: 12px;
-    padding: 10px 20px;
+    padding: 12px 0 0;
     display: none;
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .nav-links.active {
@@ -99,22 +104,10 @@
 
   .nav-links li {
     width: 100%;
-    padding: 8px 0;
   }
 
-  .nav-links li a {
-    display: block;
+  .nav-links li a,
+  .nav-control {
     width: 100%;
   }
-  .mute-button {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background-color: #444;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-  }
-  
 }
