@@ -17,22 +17,16 @@ app.use(express.json());
 syncModels();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const aiModel = "gpt-4.1";
+const aiModel = "gpt-6-luna"; //models: gpt-4o-mini, gpt-6-luna
 
 // Endpoint for generating the AI move
-app.get("/api/game", async (req, res) => {
-  const boardJson = req.query.board;
+app.post("/api/game", async (req, res) => {
+  const boardData = req.body;
+  const boardJson = JSON.stringify(boardData);
   console.log("Received board from client:", boardJson);
 
-  if (!boardJson || !boardJson.length) {
+  if (!boardData || !Array.isArray(boardData.board)) {
     return res.status(400).json({ error: "Missing or invalid board input." });
-  }
-
-  try {
-    JSON.parse(boardJson);
-  } catch (error) {
-    console.error("Error parsing board JSON:", error);
-    return res.status(400).json({ error: "Invalid board JSON format" });
   }
 
   const prompt = [];

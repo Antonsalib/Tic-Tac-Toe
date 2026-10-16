@@ -211,7 +211,13 @@ function TicTacToe() {
     
     console.log("Sending board to AI:", boardJson);
     
-    fetch(`http://localhost:3001/api/game?board=${encodeURIComponent(boardJson)}`)
+    fetch("http://localhost:3001/api/game", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: boardJson,
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
