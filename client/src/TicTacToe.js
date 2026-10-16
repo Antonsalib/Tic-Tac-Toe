@@ -1,7 +1,14 @@
 import "./App.css";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PlayerName from "./PlayerName";
 import { playSound } from './PlaySound';
+
+const EMPTY_BOARD = [
+  ["", "", ""],
+  ["", "", ""],
+  ["", "", ""]
+];
+const AVAILABLE_SHAPES = ["X", "O", "◼", "🔺"];
 
 function TicTacToe() {
   // ===== STATE MANAGEMENT =====
@@ -10,11 +17,7 @@ function TicTacToe() {
   const [backgroundColor, setBackgroundColor] = useState("default");
 
   // Game state
-  const [board, setBoard] = useState([
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""]
-  ]);
+  const [board, setBoard] = useState(EMPTY_BOARD);
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [status, setStatus] = useState("ongoing");
   const [loading, setLoading] = useState(false);
@@ -359,7 +362,7 @@ function TicTacToe() {
   }, [createPlayerInDatabase, gameMode, editingPlayer]);
 
   const resetGame = useCallback(() => {
-    setBoard([["", "", ""], ["", "", ""], ["", "", ""]]);
+    setBoard(EMPTY_BOARD.map(row => [...row]));
     setCurrentPlayer("X");
     setStatus("ongoing");
     setGameId(generateGameId());
@@ -514,8 +517,9 @@ function TicTacToe() {
   const renderCell = (row, col) => {
     return (
       <button
+        key={`${row}-${col}`}
         onClick={() => handleCellClick(row, col)}
-        disabled={gameMode === "ai" ? (currentPlayer !== "X" || loading || status !== 'ongoing') : (loading || status !== 'ongoing')}
+        disabled={isCellDisabled}
         className="cell-button">
         {renderShape(board[row][col])}
       </button>
@@ -524,12 +528,53 @@ function TicTacToe() {
 
   // Determine which player's turn to display
   const getCurrentPlayerDisplay = () => {
-    if (gameMode === "pvp") {
-      return `Current Turn: ${currentPlayer === "X" ? playerName : player2Name} (${currentPlayer === "X" ? playerShape : player2Shape})`;
-    } else {
-      return `Current Turn: ${currentPlayer === "X" ? playerName : "AI"} (${currentPlayer === "X" ? playerShape : aiShape})`;
-    }
+    const isPlayerOneTurn = currentPlayer === "X";
+    const turnName = isPlayerOneTurn
+      ? playerName
+      : gameMode === "pvp" ? player2Name : "AI";
+    const turnShape = isPlayerOneTurn
+      ? playerShape
+      : gameMode === "pvp" ? player2Shape : aiShape;
+
+    return `Current Turn: ${turnName} (${turnShape})`;
   };
+
+  const isBoardLocked = status !== "ongoing" || board.flat().some(cell => cell !== "");
+  const isCellDisabled = loading || status !== "ongoing" ||
+    (gameMode === "ai" && currentPlayer !== "X");
+  const scoreItems = gameMode === "ai"
+    ? [
+      {
+        name: playerName || "Player",
+        shape: playerShape,
+        score: aiModeScores[playerShape] || 0,
+        player: "player1",
+        ariaLabel: "Edit player name"
+      },
+      {
+        name: "AI",
+        shape: aiShape,
+        score: aiModeScores[aiShape] || 0
+      },
+      { name: "Ties", score: aiModeScores.Ties }
+    ]
+    : [
+      {
+        name: playerName || "Player 1",
+        shape: playerShape,
+        score: pvpScores.player1,
+        player: "player1",
+        ariaLabel: "Edit player 1 name"
+      },
+      {
+        name: player2Name,
+        shape: player2Shape,
+        score: pvpScores.player2,
+        player: "player2",
+        ariaLabel: "Edit player 2 name"
+      },
+      { name: "Ties", score: pvpScores.ties }
+    ];
 
   // ===== COMPONENT RENDER =====
   return (
@@ -542,90 +587,48 @@ function TicTacToe() {
           <button
             className={`mode-button ${gameMode === "ai" ? "active-mode" : ""}`}
             onClick={setGameModeAI}
-            disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+            disabled={isBoardLocked}
           >
             <i className="ri-robot-line"></i> Player vs AI
           </button>
           <button
             className={`mode-button ${gameMode === "pvp" ? "active-mode" : ""}`}
             onClick={setGameModePvP}
-            disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+            disabled={isBoardLocked}
           >
             <i className="ri-user-line"></i> Player vs Player
           </button>
         </div>
 
         {/* Scoreboard - Different display based on game mode */}
-        {gameMode === "ai" ? (
-          <div className="scoreboard">
-            <div className="score-item">
-              <div className="player-label-container">
+        <div className="scoreboard">
+          {scoreItems.map(({ name, shape, score, player, ariaLabel }) => (
+            <div className="score-item" key={name}>
+              {player ? (
+                <div className="player-label-container">
+                  <span className="player-label">
+                    {name}{shape ? ` (${shape})` : ""}
+                  </span>
+                  <button
+                    className="edit-icon"
+                    onClick={() => changePlayerName(player)}
+                    aria-label={ariaLabel}
+                  >
+                    <i className="ri-pencil-line"></i>
+                  </button>
+                </div>
+              ) : (
                 <span className="player-label">
-                  {playerName || 'Player'} ({playerShape})
+                  {shape ? `${name} (${shape})` : name}
                 </span>
-                <button
-                  className="edit-icon"
-                  onClick={() => changePlayerName("player1")}
-                  aria-label="Edit player name"
-                >
-                  <i className="ri-pencil-line"></i>
-                </button>
-              </div>
-              <span className="score">{aiModeScores[playerShape] || 0}</span>
+              )}
+              <span className="score">{score}</span>
             </div>
-            <div className="score-item">
-              <span className="player-label">AI ({aiShape})</span>
-              <span className="score">{aiModeScores[aiShape] || 0}</span>
-            </div>
-            <div className="score-item">
-              <span className="player-label">Ties</span>
-              <span className="score">{aiModeScores.Ties}</span>
-            </div>
-            <button className="reset-scoreboard-button" onClick={resetScoreboard}>
-              Reset Scores
-            </button>
-          </div>
-        ) : (
-          <div className="scoreboard">
-            <div className="score-item">
-              <div className="player-label-container">
-                <span className="player-label">
-                  {playerName || 'Player 1'} ({playerShape})
-                </span>
-                <button
-                  className="edit-icon"
-                  onClick={() => changePlayerName("player1")}
-                  aria-label="Edit player 1 name"
-                >
-                  <i className="ri-pencil-line"></i>
-                </button>
-              </div>
-              <span className="score">{pvpScores.player1}</span>
-            </div>
-            <div className="score-item">
-              <div className="player-label-container">
-                <span className="player-label">
-                  {player2Name} ({player2Shape})
-                </span>
-                <button
-                  className="edit-icon"
-                  onClick={() => changePlayerName("player2")}
-                  aria-label="Edit player 2 name"
-                >
-                  <i className="ri-pencil-line"></i>
-                </button>
-              </div>
-              <span className="score">{pvpScores.player2}</span>
-            </div>
-            <div className="score-item">
-              <span className="player-label">Ties</span>
-              <span className="score">{pvpScores.ties}</span>
-            </div>
-            <button className="reset-scoreboard-button" onClick={resetScoreboard}>
-              Reset Scores
-            </button>
-          </div>
-        )}
+          ))}
+          <button className="reset-scoreboard-button" onClick={resetScoreboard}>
+            Reset Scores
+          </button>
+        </div>
 
         {/* Shape selectors */}
         <div className="shape-selector">
@@ -638,13 +641,14 @@ function TicTacToe() {
                 id="shape-select"
                 value={playerShape}
                 onChange={(e) => setPlayerShape(e.target.value)}
-                disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+                disabled={isBoardLocked}
                 className="shape-select"
               >
-                <option value="X">X</option>
-                <option value="O">O</option>
-                <option value="◼">Square</option>
-                <option value="🔺">Triangle</option>
+                {AVAILABLE_SHAPES.map((shape) => (
+                  <option key={shape} value={shape}>
+                    {shape === "◼" ? "Square" : shape === "🔺" ? "Triangle" : shape}
+                  </option>
+                ))}
               </select>
               <div className="select-arrow">▼</div>
             </div>
@@ -660,10 +664,10 @@ function TicTacToe() {
                   id="shape2-select"
                   value={player2Shape}
                   onChange={(e) => setPlayer2Shape(e.target.value)}
-                  disabled={status !== 'ongoing' || board.flat().some(cell => cell !== "")}
+                  disabled={isBoardLocked}
                   className="shape-select"
                 >
-                  {["X", "O", "◼", "🔺"].filter(shape => shape !== playerShape).map((shape) => (
+                  {AVAILABLE_SHAPES.filter(shape => shape !== playerShape).map((shape) => (
                     <option key={shape} value={shape}>
                       {shape}
                     </option>
@@ -679,9 +683,7 @@ function TicTacToe() {
         <div className="board">
           {board.map((row, i) => (
             <div className="board-row" key={i}>
-              {row.map((_, j) => (
-                <Fragment key={j}>{renderCell(i, j)}</Fragment>
-              ))}
+              {row.map((_, j) => renderCell(i, j))}
             </div>
           ))}
         </div>
